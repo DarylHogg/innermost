@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 const protectedRoutes = ['/dashboard', '/journal', '/settings']
 
-export default auth((req) => {
+export const proxy = auth((req) => {
   const { pathname } = req.nextUrl
   const isProtected = protectedRoutes.some((r) => pathname.startsWith(r))
 
