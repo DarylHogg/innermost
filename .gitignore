@@ -11,7 +11,7 @@ out/
 .env.*.local
 
 # Prisma generated
-/app/generated/prisma
+/generated/prisma
 
 # TypeScript build info
 tsconfig.tsbuildinfo
