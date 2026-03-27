@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Environment files — never commit these
+.env
+.env.local
+.env.*.local
+
+# Prisma generated
+/app/generated/prisma
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

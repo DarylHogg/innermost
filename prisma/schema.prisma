@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  tier          Tier     @default(FREE)
+  createdAt     DateTime @default(now())
+  stripeId      String?
+  reminderTime  String?
+  reminderFreq  String?
+  goals         String[]
+  weeklySummary String?
+
+  entries       Entry[]
+  streaks       Streak[]
+  badges        UserBadge[]
+  therapistLink TherapistLink? @relation("patient")
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  @@unique([identifier, token])
+}
+
+model Entry {
+  id                  String   @id @default(cuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id])
+  title               String?
+  body                String
+  moodScore           Int?
+  moodLabel           String?
+  wordCount           Int
+  isPrivate           Boolean  @default(false)
+  sharedWithTherapist Boolean  @default(true)
+  aiSummary           String?
+  aiFlags             String[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  annotations Annotation[]
+  prompt      PromptOfDay? @relation(fields: [promptId], references: [id])
+  promptId    String?
+}
+
+model Annotation {
+  id         String   @id @default(cuid())
+  entryId    String
+  entry      Entry    @relation(fields: [entryId], references: [id])
+  authorId   String
+  authorName String
+  body       String
+  createdAt  DateTime @default(now())
+}
+
+model Streak {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id])
+  current   Int       @default(0)
+  longest   Int       @default(0)
+  shields   Int       @default(0)
+  lastEntry DateTime?
+  updatedAt DateTime  @updatedAt
+}
+
+model Badge {
+  id              String      @id @default(cuid())
+  key             String      @unique
+  name            String
+  description     String
+  iconEmoji       String
+  xpRequired      Int?
+  streakRequired  Int?
+  entriesRequired Int?
+  userBadges      UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+  badgeId  String
+  badge    Badge    @relation(fields: [badgeId], references: [id])
+  earnedAt DateTime @default(now())
+  @@unique([userId, badgeId])
+}
+
+model TherapistLink {
+  id               String   @id @default(cuid())
+  patientId        String   @unique
+  patient          User     @relation("patient", fields: [patientId], references: [id])
+  therapistName    String
+  therapistEmail   String
+  accessGranted    Boolean  @default(false)
+  shareAuto        Boolean  @default(true)
+  allowAnnotations Boolean  @default(false)
+  createdAt        DateTime @default(now())
+}
+
+model PromptOfDay {
+  id       String  @id @default(cuid())
+  text     String
+  category String
+  entries  Entry[]
+}
+
+enum Tier {
+  FREE
+  PAID
+}

@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-amber-journal: #BA7517;
+  --color-amber-light: #FAEEDA;
+  --color-amber-mid: #EF9F27;
+  --color-amber-border: #FAC775;
+  --color-teal-calm: #1D9E75;
+  --color-teal-light: #E1F5EE;
+  --color-teal-border: #9FE1CB;
+  --font-family-sans: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #FAFAF8;
+  color: #1a1a1a;
+}
