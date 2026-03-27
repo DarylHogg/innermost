@@ -13,7 +13,6 @@ export default auth((req) => {
     return NextResponse.redirect(signInUrl)
   }
 
-  // Redirect signed-in users away from sign-in page
   if (pathname.startsWith('/sign-in') && req.auth) {
     return NextResponse.redirect(new URL('/dashboard', req.url))
   }
