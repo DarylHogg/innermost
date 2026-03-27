@@ -8,6 +8,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma as any),
   secret: process.env.AUTH_SECRET,
   trustHost: true,
+  logger: {
+    error: (error) => {
+      console.error('[nextauth] error:', error)
+    },
+    warn: (code) => {
+      console.warn('[nextauth] warn:', code)
+    },
+    debug: (code, metadata) => {
+      console.log('[nextauth] debug:', code, JSON.stringify(metadata))
+    },
+  },
   providers: [
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? [Google({
