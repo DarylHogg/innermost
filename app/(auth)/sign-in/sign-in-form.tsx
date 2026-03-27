@@ -1,6 +1,7 @@
 'use client'
 
 import { use, useState } from 'react'
+import { signIn } from 'next-auth/react'
 
 export default function SignInForm({
   searchParams,
@@ -9,7 +10,32 @@ export default function SignInForm({
 }) {
   const { verify } = use(searchParams)
   const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email) return
+    setLoading(true)
+    setError('')
+    try {
+      const result = await signIn('resend', {
+        email,
+        redirect: false,
+        callbackUrl: '/dashboard',
+      })
+      if (result?.error) {
+        setError('Something went wrong. Please try again.')
+      } else {
+        setSubmitted(true)
+      }
+    } catch {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (verify || submitted) {
     return (
@@ -36,13 +62,7 @@ export default function SignInForm({
       <h1 className="text-xl font-semibold text-[#1a1a1a] mb-1">Welcome back</h1>
       <p className="text-sm text-zinc-500 mb-6">Sign in or create your account</p>
 
-      {/* Magic link form */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          if (email) setSubmitted(true)
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <label className="block text-xs font-medium text-zinc-600 mb-1.5" htmlFor="email">
           Email address
         </label>
@@ -53,30 +73,20 @@ export default function SignInForm({
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           required
-          className="w-full border border-zinc-200 rounded-xl px-4 py-3 text-sm text-[#1a1a1a] placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#EF9F27]/30 focus:border-[#EF9F27] transition-colors"
+          disabled={loading}
+          className="w-full border border-zinc-200 rounded-xl px-4 py-3 text-sm text-[#1a1a1a] placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#EF9F27]/30 focus:border-[#EF9F27] transition-colors disabled:opacity-50"
         />
+        {error && (
+          <p className="mt-2 text-xs text-red-500">{error}</p>
+        )}
         <button
           type="submit"
-          className="mt-3 w-full bg-[#1a1a1a] text-white text-sm font-medium py-3 rounded-xl hover:bg-zinc-700 transition-colors"
+          disabled={loading}
+          className="mt-3 w-full bg-[#1a1a1a] text-white text-sm font-medium py-3 rounded-xl hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          Continue with email
+          {loading ? 'Sending link…' : 'Continue with email'}
         </button>
       </form>
-
-      <div className="flex items-center gap-3 my-5">
-        <div className="flex-1 h-px bg-zinc-100" />
-        <span className="text-xs text-zinc-400">or</span>
-        <div className="flex-1 h-px bg-zinc-100" />
-      </div>
-
-      {/* Google */}
-      <button
-        onClick={() => alert('Google sign-in not wired up yet')}
-        className="w-full flex items-center justify-center gap-3 border border-zinc-200 rounded-xl px-4 py-3 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors"
-      >
-        <GoogleIcon />
-        Continue with Google
-      </button>
     </div>
   )
 }
