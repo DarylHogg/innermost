@@ -5,6 +5,7 @@ import Resend from 'next-auth/providers/resend'
 import { prisma } from './prisma'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   adapter: PrismaAdapter(prisma as any),
   providers: [
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
