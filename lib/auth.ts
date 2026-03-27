@@ -1,8 +1,6 @@
 import NextAuth from 'next-auth'
-import { PrismaAdapter } from '@auth/prisma-adapter'
 import Google from 'next-auth/providers/google'
 import Resend from 'next-auth/providers/resend'
-import { prisma } from './prisma'
 
 console.log('[auth] AUTH_SECRET set:', !!process.env.AUTH_SECRET)
 console.log('[auth] RESEND_API_KEY set:', !!process.env.RESEND_API_KEY)
