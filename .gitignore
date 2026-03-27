@@ -19,6 +19,9 @@ tsconfig.tsbuildinfo
 # OS
 .DS_Store
 
+# Salesforce
+.sfdx/
+
 # Editor
 .vscode/
 .idea/
